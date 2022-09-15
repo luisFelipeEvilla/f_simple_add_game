@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
+import 'package:sum_game/controllers/sumController.dart';
 
-import '../utils/randomInt.dart';
 import '../widgets/optionsButtons.dart';
 import '../widgets/problemWidget.dart';
 import '../widgets/scoreWidget.dart';
@@ -13,52 +14,21 @@ class SumWidget extends StatefulWidget {
 }
 
 class _SumWidgetState extends State<SumWidget> {
-  late int op1;
-  late int op2;
-  late int rta;
-  List<int> vectorRta = [];
-  int score = 0;
+  final controller = Get.put(SumController());
 
   @override
   void initState() {
     super.initState();
   }
 
-  void onResultClick(int value) {
-    if (value == rta) {
-      score = score + 1;
-    }
-    setState(() {});
-  }
-
-  void setValues() {
-    op1 = RandomInt.generate(max: 50);
-    op2 = RandomInt.generate(max: 50);
-
-    rta = op1 + op2;
-    vectorRta.clear();
-    vectorRta.add(rta);
-    vectorRta.add(rta + 1);
-    vectorRta.add(rta - 1);
-    vectorRta.shuffle();
-  }
-
-  void reset() {
-    setState(() {
-      score = 0;
-    });
-
-    setValues();
-  }
-
   @override
   Widget build(BuildContext context) {
-    setValues();
+    controller.setValues();
     return Column(
       children: [
-        scoreWidget(score, reset),
-        problemWidget(op1, op2),
-        optionButtons(vectorRta, onResultClick)
+        Obx(() => scoreWidget(controller.score.value, controller.reset)),
+        Obx(() => problemWidget(controller.op1.value, controller.op2.value)),
+        Obx(() => optionButtons(controller.vectorRta, controller.onResultClick))
       ],
     );
   }
